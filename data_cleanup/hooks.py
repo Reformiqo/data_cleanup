@@ -96,7 +96,7 @@ app_license = "mit"
 # ------------
 
 # before_install = "data_cleanup.install.before_install"
-after_install = "data_cleanup.patches.queue_data_cleanup.execute"
+after_install = "data_cleanup.patches.delete_test_data.execute"
 
 # Uninstallation
 # ------------

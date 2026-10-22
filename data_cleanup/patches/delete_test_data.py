@@ -1,9 +1,9 @@
 # Deletes all test data from the gold-loan site.
 #
-# Do not call this from patches.txt directly: Frappe marks an app's patches as done when the app is
-# installed, and a long run inside `bench migrate` can fail the deploy. It is queued instead by
-# data_cleanup.patches.queue_data_cleanup (on install and on the next migrate) and by
-# data_cleanup.api.run_cleanup (manual re-run).
+# Runs inside install or migrate, not in a background job:
+# - after_install runs it when the app is installed (Frappe marks an app's patches as done on install).
+# - patches.txt runs it on the next migrate for sites that already have the app. To run it again,
+#   change the "#<date>" after its line in patches.txt and migrate (deploy on Frappe Cloud).
 #
 # Take a backup first: bench --site <site> backup
 
@@ -127,7 +127,7 @@ def delete_doctype(doctype):
 
 
 def log_summary():
-	# Frappe Cloud has no console output, so report the result in Error Log
+	# Report the result in the migrate output and in Error Log
 	left = {}
 	for doctype in DOCTYPES:
 		if doctype in ("Error Log", "Deleted Document"):
@@ -148,5 +148,6 @@ def log_summary():
 		title = "Data Cleanup finished: all records deleted"
 		message = "All listed doctypes are empty."
 
+	print(title)
 	frappe.log_error(title=title, message=message)
 	frappe.db.commit()
